@@ -3,11 +3,12 @@ name: Liftoff Deploy
 on:
   push:
     branches: ['ga-noact']
-    # Liftoff rewrites this file whenever the canvas changes and commits it.
-    # That commit is a push, so without this every configuration change would
-    # start a full build of unchanged code. A run is skipped only when the
-    # commit touches nothing else, so real code alongside it still builds.
-    paths-ignore:
+    # This version starts the first run. GitHub dispatches only a workflow that
+    # is on the default branch or has already run, and this branch's copy has
+    # done neither. So the commit that writes this file is the trigger. The next
+    # sync restores the ordinary filter, which skips Liftoff's own commits.
+    paths:
+      - '**'
       - '.github/workflows/liftoff-deploy.yml'
   # Allows POST /api/v1/.../build to trigger a fresh build without a code push.
   # The API hits GitHub's workflows/{file}/dispatches endpoint with this branch.
